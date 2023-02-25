@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -7,22 +7,15 @@ import {
   View,
 } from "react-native";
 
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { initializeApp } from "firebase/app";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import { I18nextProvider, useTranslation } from "react-i18next";
-import { Switch } from "react-native";
-import i18n from "./i18n";
 
-const Login = () => {
-  const { t } = useTranslation();
-
+const LoginScreen = () => {
   // const analytics = getAnalytics(app);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-  const [language, setLanguage] = useState("en-US");
 
   const firebaseConfig = {
     apiKey: "AIzaSyCV4urkd9Kce86hzDvR7WH0x3LUHNANPTg",
@@ -40,6 +33,7 @@ const Login = () => {
 
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
+        // Signed in
         const user = userCredential.user;
         console.log(user);
         alert("welcome! " + user.email);
@@ -61,58 +55,21 @@ const Login = () => {
   };
 
   const handleSignup = () => {
-    navigation.navigate("Signup");
+    navigation.navigate('Signup');
   };
-
-  const toggleLanguage = () => {
-    const newLanguage = language === "en-US" ? "ar-SA" : "en-US";
-    setLanguage(newLanguage);
-    i18n.changeLanguage(newLanguage);
-
-    AsyncStorage.setItem("language", newLanguage);
-  };
-
-  useEffect(() => {
-    AsyncStorage.getItem("language")
-      .then((value) => {
-        if (value) {
-          setLanguage(value);
-          i18n.changeLanguage(value);
-        }
-      })
-      .catch((error) => console.log(error));
-  }, []);
 
   return (
     <View style={styles.container}>
-      <View style={styles.switchContainer}>
-        <Switch
-          value={language === "ar-SA"}
-          onValueChange={toggleLanguage}
-          thumbColor="#fff"
-          trackColor={{ false: "#333", true: "#7f8fa6" }}
-        />
-        <Text style={[styles.switchLabel]}>{t("language")}</Text>
-      </View>
-      <I18nextProvider i18n={i18n}>
-        <Text
-          style={[
-            styles.title,
-            { textAlign: language === "ar-SA" ? "right" : "left" },
-          ]}
-        >
-          {t("welcome")}
-        </Text>
-      </I18nextProvider>
+      <Text style={styles.title}>Welcome</Text>
       <TextInput
-        style={[styles.input, { textAlign: language === "ar-SA" ? "right" : "left" },]}
-        placeholder={t("email")}
+        style={styles.input}
+        placeholder="Email"
         onChangeText={setEmail}
         value={email}
       />
       <TextInput
-        style={[styles.input, { textAlign: language === "ar-SA" ? "right" : "left" },]}
-        placeholder={t('password')}
+        style={styles.input}
+        placeholder="Password"
         onChangeText={setPassword}
         value={password}
         secureTextEntry
@@ -120,14 +77,14 @@ const Login = () => {
       <Text style={styles.errorMessage}>{errorMessage}</Text>
       <View style={styles.buttonsContainer}>
         <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-          <Text style={styles.loginButtonText}>{t("login")}</Text>
+          <Text style={styles.loginButtonText}>Login</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.resetButton} onPress={handleReset}>
-          <Text style={styles.resetButtonText}>{t("reset")}</Text>
+          <Text style={styles.resetButtonText}>Reset</Text>
         </TouchableOpacity>
       </View>
       <TouchableOpacity style={styles.signupLink} onPress={handleSignup}>
-        <Text style={styles.signupLinkText}>{t("dontHaveAccount")}</Text>
+        <Text style={styles.signupLinkText}>Don't you have an account?</Text>
       </TouchableOpacity>
     </View>
   );
@@ -193,11 +150,6 @@ const styles = StyleSheet.create({
     color: "#FF0000",
     marginBottom: 16,
   },
-  switchContainer: {
-    position: "absolute",
-    top: 20,
-    right: 20,
-  },
 });
 
-export default Login;
+export default LoginScreen;
